@@ -2,18 +2,13 @@ package net.mattcarpenter.srs.sm2;
 
 import net.mattcarpenter.srs.sm2.utils.MockTimeProvider;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeUtils;
 import org.joda.time.format.DateTimeFormat;
-import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Set;
-
-import static org.mockito.Mockito.when;
 
 public class SchedulerTest {
 
@@ -60,7 +55,7 @@ public class SchedulerTest {
     }
 
     @Test
-    public void updateItemInterval_customConsecutiveCorrectIntervalMapping() {
+    public void updateItemInterval_resetsAfterLapse() {
         Scheduler scheduler = Scheduler.builder().build();
         Item item = Item.builder().interval(0).build();
 
@@ -71,15 +66,27 @@ public class SchedulerTest {
         scheduler.updateItemInterval(item, statistics);
         Assert.assertEquals(item.getInterval(), 6, "item interval should jump from 1 day to 6 days");
 
-        scheduler.updateItemInterval(item, statistics);
-        Assert.assertEquals(item.getInterval(), 17);
+        // represents a session where a lapse occurred but item answered successfully at the end
+        SessionItemStatistics statistics2 = new SessionItemStatistics(true, 5);
+        scheduler.updateItemInterval(item, statistics2);
+        Assert.assertEquals(item.getInterval(), 1);
 
         scheduler.updateItemInterval(item, statistics);
-        Assert.assertEquals(item.getInterval(), 49);
+        Assert.assertEquals(item.getInterval(), 6);
     }
 
     @Test
-    public void updateItemInterval_resets_lapseFollowedBySuccess() {
+    public void updateItemInterval_failedSession() {
+        Scheduler scheduler = Scheduler.builder().build();
+        Item item = Item.builder().interval(0).build();
+
+        SessionItemStatistics statistics = new SessionItemStatistics(true, 2);
+        scheduler.updateItemInterval(item, statistics);
+        Assert.assertEquals(item.getInterval(), 0);
+    }
+
+    @Test
+    public void updateItemInterval_customConsecutiveCorrectIntervalMapping() {
         Map<Integer, Float> intervalMapping = Map.ofEntries(
                 Map.entry(1, 1f),
                 Map.entry(2, 2f),
@@ -142,6 +149,7 @@ public class SchedulerTest {
 
         scheduler.updateItemSchedule(item);
 
-        System.out.println("foo");
+        // interval of 1 should return a due date that is one day ahead of the initial
+        Assert.assertEquals(item.getDueDate(), mockTimeProvider.getNow().plusDays(1));
     }
 }
