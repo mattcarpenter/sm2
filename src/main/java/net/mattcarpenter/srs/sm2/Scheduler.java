@@ -3,25 +3,34 @@ package net.mattcarpenter.srs.sm2;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.joda.time.DateTime;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 
 @Builder
 public class Scheduler {
 
     private final float MIN_EASINESS_FACTOR = 1.3f;
-    private final Map<Integer, Integer> defaultConsecutiveCorrectIntervalMappings = Map.ofEntries(
-            Map.entry(1, 1),
-            Map.entry(2, 6)
+    private final int HOURS_PER_DAY = 24;
+
+    private final Map<Integer, Float> defaultConsecutiveCorrectIntervalMappings = Map.ofEntries(
+            Map.entry(1, 1f),
+            Map.entry(2, 6f)
     );
 
     @Getter
     @Setter
     @Builder.Default
-    private Map<Integer, Integer> consecutiveCorrectIntervalMappings = new HashMap<>();
+    private Map<Integer, Float> consecutiveCorrectIntervalMappings = new HashMap<>();
 
     @Builder.Default
     private Set<Item> items = new HashSet<>();
+
+    @Builder.Default
+    private TimeProvider timeProvider = new JodaTimeProvider();
 
     public void addItem(Item item) {
         items.add(item);
@@ -34,7 +43,7 @@ public class Scheduler {
     public void applySession(Session session) {
         session.getItemStatistics().forEach((item, statistics) -> {
             updateItemInterval(item, statistics);
-            // todo: update due date given new intervals
+            updateItemSchedule(item);
         });
     }
 
@@ -61,13 +70,24 @@ public class Scheduler {
 
             // either update interval based on a static mapping, or based on the previous interval * EF.
             // default static mappings are based on SM2 defaults (1 day then 6 days) but this can be overridden.
-            Integer fixedInterval = getConsecutiveCorrectInterval(item.getConsecutiveCorrectCount());
+            Float fixedInterval = getConsecutiveCorrectInterval(item.getConsecutiveCorrectCount());
             item.setInterval(Optional.ofNullable(fixedInterval)
-                            .orElse(Math.round(item.getInterval() * item.getEasinessFactor())));
+                            .orElse((float)Math.round(item.getInterval() * item.getEasinessFactor())));
         }
     }
 
-    protected Integer getConsecutiveCorrectInterval(int consecutiveCorrect) {
+    protected void updateItemSchedule(Item item) {
+        int intervalDaysWhole = (int)item.getInterval();
+        long intervalDaysFraction = (long)item.getInterval() - intervalDaysWhole;
+
+        DateTime dueDate = timeProvider.getNow()
+                .plusDays(intervalDaysWhole)
+                .plusHours(Math.round(HOURS_PER_DAY * intervalDaysFraction));
+
+        item.setDueDate(dueDate);
+    }
+
+    protected Float getConsecutiveCorrectInterval(int consecutiveCorrect) {
         return consecutiveCorrectIntervalMappings.getOrDefault(consecutiveCorrect,
                 defaultConsecutiveCorrectIntervalMappings.get(consecutiveCorrect));
     }

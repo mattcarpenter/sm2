@@ -1,5 +1,6 @@
 package net.mattcarpenter.srs.sm2;
 
+import org.joda.time.DateTime;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -19,7 +20,7 @@ public class ItemTest {
 
     @Test
     public void builder_buildsItem() {
-        final Date now = new Date();
+        final DateTime now = DateTime.now();
         Item item = Item.builder()
                 .consecutiveCorrectCount(1)
                 .easinessFactor(2.1f)
