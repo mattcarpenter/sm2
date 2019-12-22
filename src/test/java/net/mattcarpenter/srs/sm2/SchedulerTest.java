@@ -182,10 +182,37 @@ public class SchedulerTest {
         // apply first session and check that the due date is 1 days from the initial date
         scheduler.applySession(session);
         Assert.assertEquals(item.getDueDate(), initialDate.plusDays(1));
+        Assert.assertEquals(item.getConsecutiveCorrectCount(), 1);
 
         // apply the first session again and check that the due date is 7 days from the initial date
         scheduler.applySession(session);
         Assert.assertEquals(item.getDueDate(), initialDate.plusDays(6));
+        Assert.assertEquals(item.getConsecutiveCorrectCount(), 2);
+    }
+
+    @Test
+    public void applySession_schedules_lapsed() {
+        Item item = Item.builder().build();
+        Session session = new Session();
+        Scheduler scheduler = Scheduler.builder().timeProvider(mockTimeProvider).build();
+
+        Review review = new Review(item, 5);
+        session.applyReview(review);
+
+        // apply first session and check that the due date is 1 days from the initial date
+        scheduler.applySession(session);
+        Assert.assertEquals(item.getDueDate(), initialDate.plusDays(1));
+        Assert.assertEquals(item.getConsecutiveCorrectCount(), 1);
+
+        // apply the first session again and check that the due date is 7 days from the initial date
+        Session session2 = new Session();
+        Review review2 = new Review(item, 0);
+        Review review3 = new Review(item, 5);
+        session2.applyReview(review2);
+        session2.applyReview(review3);
+        scheduler.applySession(session2);
+        Assert.assertEquals(item.getDueDate(), initialDate.plusDays(1));
+        Assert.assertEquals(item.getConsecutiveCorrectCount(), 1);
     }
 
     @Test
