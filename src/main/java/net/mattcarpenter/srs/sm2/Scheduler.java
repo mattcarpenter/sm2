@@ -75,7 +75,7 @@ public class Scheduler {
 
     protected void updateItemSchedule(Item item) {
         int intervalDaysWhole = (int)item.getInterval();
-        long intervalDaysFraction = (long)item.getInterval() - intervalDaysWhole;
+        float intervalDaysFraction = item.getInterval() - intervalDaysWhole;
 
         DateTime dueDate = timeProvider.getNow()
                 .plusDays(intervalDaysWhole)

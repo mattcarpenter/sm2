@@ -13,11 +13,12 @@ import java.util.Set;
 public class SchedulerTest {
 
     private MockTimeProvider mockTimeProvider;
+    private DateTime initialDate;
 
     @BeforeClass
     public void before() {
         String pattern = "yyyy-mm-dd hh:mm:ss aa";
-        DateTime initialDate = DateTime.parse("2019-01-01 12:00:00 AM", DateTimeFormat.forPattern(pattern));
+        initialDate = DateTime.parse("2019-01-01 12:00:00 AM", DateTimeFormat.forPattern(pattern));
         mockTimeProvider = new MockTimeProvider(initialDate);
     }
 
@@ -138,7 +139,7 @@ public class SchedulerTest {
     }
 
     @Test
-    public void updateItemSchedule_computesDueDate() {
+    public void updateItemSchedule_computesDueDate_wholeDayInterval() {
         Item item = Item.builder()
                 .interval(1f)
                 .build();
@@ -151,5 +152,53 @@ public class SchedulerTest {
 
         // interval of 1 should return a due date that is one day ahead of the initial
         Assert.assertEquals(item.getDueDate(), mockTimeProvider.getNow().plusDays(1));
+    }
+
+    @Test
+    public void updateItemSchedule_computesDueDate_partialDayInterval() {
+        Item item = Item.builder()
+                .interval(1.5f)
+                .build();
+
+        Scheduler scheduler = Scheduler.builder()
+                .timeProvider(mockTimeProvider)
+                .build();
+
+        scheduler.updateItemSchedule(item);
+
+        // interval of 1.5 should return a due date that is one 1 day 12 hours ahead of now
+        Assert.assertEquals(item.getDueDate(), initialDate.plusDays(1).plusHours(12));
+    }
+
+    @Test
+    public void applySession_schedules_ok() {
+        Item item = Item.builder().build();
+        Session session = new Session();
+        Scheduler scheduler = Scheduler.builder().timeProvider(mockTimeProvider).build();
+
+        Review review = new Review(item, 5);
+        session.applyReview(review);
+
+        // apply first session and check that the due date is 1 days from the initial date
+        scheduler.applySession(session);
+        Assert.assertEquals(item.getDueDate(), initialDate.plusDays(1));
+
+        // apply the first session again and check that the due date is 7 days from the initial date
+        scheduler.applySession(session);
+        Assert.assertEquals(item.getDueDate(), initialDate.plusDays(6));
+    }
+
+    @Test
+    public void consecutiveCorrectIntervalMappings_get_set() {
+        Scheduler scheduler = Scheduler.builder().build();
+        Map<Integer, Float> intervalMapping = Map.ofEntries(
+                Map.entry(1, 1f),
+                Map.entry(2, 2f),
+                Map.entry(3, 4f)
+        );
+
+        scheduler.setConsecutiveCorrectIntervalMappings(intervalMapping);
+
+        Assert.assertEquals(scheduler.getConsecutiveCorrectIntervalMappings(), intervalMapping);
     }
 }
