@@ -21,7 +21,9 @@
     </licenses>
 
     <scm>
-        <url>https://github.com/mattcarpenter/sm2</url>
+        <connection>scm:git:https://github.com/mattcarpenter/sm2.git</connection>
+        <developerConnection>scm:git:https://github.com/mattcarpenter/sm2.git</developerConnection>
+        <url>https://github.com/mattcarpenter/sm2/</url>
     </scm>
 
     <dependencies>
