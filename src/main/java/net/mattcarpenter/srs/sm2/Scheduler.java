@@ -1,5 +1,6 @@
 package net.mattcarpenter.srs.sm2;
 
+import com.google.common.collect.ImmutableMap;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,9 +14,9 @@ public class Scheduler {
     private final float MIN_EASINESS_FACTOR = 1.3f;
     private final int HOURS_PER_DAY = 24;
 
-    private final Map<Integer, Float> defaultConsecutiveCorrectIntervalMappings = Map.ofEntries(
-            Map.entry(1, 1f),
-            Map.entry(2, 6f)
+    private final Map<Integer, Float> defaultConsecutiveCorrectIntervalMappings = ImmutableMap.of(
+            1, 1f,
+            2, 6f
     );
 
     @Getter

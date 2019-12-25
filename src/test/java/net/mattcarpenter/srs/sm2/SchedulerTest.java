@@ -1,5 +1,6 @@
 package net.mattcarpenter.srs.sm2;
 
+import com.google.common.collect.ImmutableMap;
 import net.mattcarpenter.srs.sm2.utils.MockTimeProvider;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -88,10 +89,10 @@ public class SchedulerTest {
 
     @Test
     public void updateItemInterval_customConsecutiveCorrectIntervalMapping() {
-        Map<Integer, Float> intervalMapping = Map.ofEntries(
-                Map.entry(1, 1f),
-                Map.entry(2, 2f),
-                Map.entry(3, 4f)
+        Map<Integer, Float> intervalMapping = ImmutableMap.of(
+                1, 1f,
+                2, 2f,
+                3, 4f
         );
 
         Scheduler scheduler = Scheduler.builder()
@@ -124,9 +125,9 @@ public class SchedulerTest {
 
     @Test
     public void getConsecutiveCorrectInterval_getsBothCustomAndDefault() {
-        Map<Integer, Float> intervalMapping = Map.ofEntries(
-                Map.entry(1, 1f),
-                Map.entry(2, 4f)
+        Map<Integer, Float> intervalMapping = ImmutableMap.of(
+                1, 1f,
+                2, 4f
         );
 
         Scheduler scheduler = Scheduler.builder()
@@ -218,10 +219,10 @@ public class SchedulerTest {
     @Test
     public void consecutiveCorrectIntervalMappings_get_set() {
         Scheduler scheduler = Scheduler.builder().build();
-        Map<Integer, Float> intervalMapping = Map.ofEntries(
-                Map.entry(1, 1f),
-                Map.entry(2, 2f),
-                Map.entry(3, 4f)
+        Map<Integer, Float> intervalMapping = ImmutableMap.of(
+                1, 1f,
+                2, 2f,
+                3, 4f
         );
 
         scheduler.setConsecutiveCorrectIntervalMappings(intervalMapping);
