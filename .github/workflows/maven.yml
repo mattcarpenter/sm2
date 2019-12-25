@@ -17,7 +17,7 @@ jobs:
       run: mvn -B package --file pom.xml
 
     - name: Release
-      uses: qcastel/github-actions-maven-release@master
+      uses: qcastel/github-actions-maven-release@1.0.3
       with:
         release-branch-name: "master"
         git-release-bot-name: "release-bot"
