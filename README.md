@@ -21,7 +21,7 @@ SM2's Maven group ID is `net.mattcarpenter.srs` and its artifact ID is `sm2`. To
 
 The following example illustrates how item reviews are applied to compute the item's review schedule.
 
-```$java
+```java
 Scheduler scheduler = Scheduler.builder().build();
 
 // Create an Item with default starting easiness factor
@@ -61,7 +61,7 @@ System.out.println(item.getDueDate());
 
 The scheduler may be built with a custom consecutive-correct-count-to-interval mapping. See the following example.
 
-```$java
+```java
 Map<Integer, Float> intervalMapping = ImmutableMap.of(
         2, 4f
 );
