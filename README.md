@@ -25,38 +25,32 @@ The following example illustrates how item reviews are applied to compute the it
 Scheduler scheduler = Scheduler.builder().build();
 
 // Create an Item with default starting easiness factor
+
 Item item = Item.builder().build();
 
 // A session represents a contiguous block of time where a user reviews one or more items until a satisfactory score is
 // given to each item being reviewed.
+
 Session session1 = new Session();
 
 // One or more reviews for any given item may be applied to a session. As per the SM-2 algorithm, if an item lapsed
 // during a session but was answered correctly later in the same session, the item's EF will not be adjusted.
+
 Review review1 = new Review(item, 5);
 session1.applyReview(review1);
 
 // Update due dates and intervals for each item applied to the session.
+
 scheduler.applySession(session1);
 
-System.out.println(item.getDueDate());
-// 2019-01-02
+System.out.println(item.getDueDate()); // 2019-01-02
 
 Session session2 = new Session();
 Review review2 = new Review(item, 5);
 session2.applyReview(review2);
 scheduler.applySession(session2);
 
-System.out.println(item.getDueDate());
-// 2019-01-07
-
-Session session3 = new Session();
-Review review3 = new Review(item, 5);
-session3.applyReview(review3);
-scheduler.applySession(session3);
-
-System.out.println(item.getDueDate());
-// 2019-01-18
+System.out.println(item.getDueDate()); // 2019-01-07
 ```
 
 The scheduler may be built with a custom consecutive-correct-count-to-interval mapping. See the following example.
