@@ -1,5 +1,5 @@
 # SM2: Spaced Repetition Scheduling Library for Java
-![badge](https://github.com/mattcarpenter/sm2/workflows/Java%20CI/badge.svg?branch=master)
+![badge](https://github.com/mattcarpenter/sm2/workflows/Java%20CI/badge.svg?branch=master) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 SM2 is a lightweight SRS scheduling library for Java based on the SuperMemo SM-2 algorithm developed by Piotr Wozniak.
 
