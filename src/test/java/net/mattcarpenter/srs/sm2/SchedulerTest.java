@@ -5,7 +5,7 @@ import net.mattcarpenter.srs.sm2.utils.MockTimeProvider;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.Map;
@@ -16,7 +16,7 @@ public class SchedulerTest {
     private MockTimeProvider mockTimeProvider;
     private DateTime initialDate;
 
-    @BeforeClass
+    @BeforeMethod
     public void before() {
         initialDate = makeDate("2019-01-01 12:00:00 AM");
         mockTimeProvider = new MockTimeProvider(initialDate);
