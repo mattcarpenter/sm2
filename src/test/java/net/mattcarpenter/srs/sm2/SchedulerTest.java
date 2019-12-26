@@ -18,8 +18,7 @@ public class SchedulerTest {
 
     @BeforeClass
     public void before() {
-        String pattern = "yyyy-mm-dd hh:mm:ss aa";
-        initialDate = DateTime.parse("2019-01-01 12:00:00 AM", DateTimeFormat.forPattern(pattern));
+        initialDate = makeDate("2019-01-01 12:00:00 AM");
         mockTimeProvider = new MockTimeProvider(initialDate);
     }
 
@@ -44,10 +43,10 @@ public class SchedulerTest {
 
         SessionItemStatistics statistics = new SessionItemStatistics(false, 5);
         scheduler.updateItemInterval(item, statistics);
-        Assert.assertEquals(item.getInterval(), 1, "item interval should be 1 day");
+        Assert.assertEquals(item.getInterval(), 1);
 
         scheduler.updateItemInterval(item, statistics);
-        Assert.assertEquals(item.getInterval(), 6, "item interval should jump from 1 day to 6 days");
+        Assert.assertEquals(item.getInterval(), 6);
 
         scheduler.updateItemInterval(item, statistics);
         Assert.assertEquals(item.getInterval(), 17);
@@ -63,10 +62,10 @@ public class SchedulerTest {
 
         SessionItemStatistics statistics = new SessionItemStatistics(false, 5);
         scheduler.updateItemInterval(item, statistics);
-        Assert.assertEquals(item.getInterval(), 1, "item interval should be 1 day");
+        Assert.assertEquals(item.getInterval(), 1);
 
         scheduler.updateItemInterval(item, statistics);
-        Assert.assertEquals(item.getInterval(), 6, "item interval should jump from 1 day to 6 days");
+        Assert.assertEquals(item.getInterval(), 6);
 
         // represents a session where a lapse occurred but item answered successfully at the end
         SessionItemStatistics statistics2 = new SessionItemStatistics(true, 5);
@@ -103,16 +102,16 @@ public class SchedulerTest {
 
         SessionItemStatistics statistics = new SessionItemStatistics(false, 5);
         scheduler.updateItemInterval(item, statistics);
-        Assert.assertEquals(item.getInterval(), 1, "item interval should be 1 day");
+        Assert.assertEquals(item.getInterval(), 1);
 
         scheduler.updateItemInterval(item, statistics);
-        Assert.assertEquals(item.getInterval(), 2, "item interval should be 2 days");
+        Assert.assertEquals(item.getInterval(), 2);
 
         scheduler.updateItemInterval(item, statistics);
-        Assert.assertEquals(item.getInterval(), 4, "item interval should be 4 days");
+        Assert.assertEquals(item.getInterval(), 4);
 
         scheduler.updateItemInterval(item, statistics);
-        Assert.assertEquals(item.getInterval(), 12, "item interval should be 12 days");
+        Assert.assertEquals(item.getInterval(), 12);
     }
 
     @Test
@@ -185,9 +184,12 @@ public class SchedulerTest {
         Assert.assertEquals(item.getDueDate(), initialDate.plusDays(1));
         Assert.assertEquals(item.getConsecutiveCorrectCount(), 1);
 
-        // apply the first session again and check that the due date is 7 days from the initial date
+        // change mock date to simulate late review
+        mockTimeProvider.setNow(makeDate("2019-01-10 12:00:00 AM"));
+
+        // apply the first session again and check that the due date is 7 days from the second review date
         scheduler.applySession(session);
-        Assert.assertEquals(item.getDueDate(), initialDate.plusDays(6));
+        Assert.assertEquals(item.getDueDate(), makeDate("2019-01-16 12:00:00 AM"));
         Assert.assertEquals(item.getConsecutiveCorrectCount(), 2);
     }
 
@@ -228,5 +230,10 @@ public class SchedulerTest {
         scheduler.setConsecutiveCorrectIntervalMappings(intervalMapping);
 
         Assert.assertEquals(scheduler.getConsecutiveCorrectIntervalMappings(), intervalMapping);
+    }
+
+    public DateTime makeDate(String date) {
+        String pattern = "yyyy-mm-dd hh:mm:ss aa";
+        return DateTime.parse(date, DateTimeFormat.forPattern(pattern));
     }
 }

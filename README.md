@@ -13,7 +13,7 @@ SM2's Maven group ID is `net.mattcarpenter.srs` and its artifact ID is `sm2`. To
 <dependency>
   <groupId>net.mattcarpenter.srs</groupId>
   <artifactId>sm2</artifactId>
-  <version>1.0</version>
+  <version>1.1</version>
 </dependency>
 ```
 
